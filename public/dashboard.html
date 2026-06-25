@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - SendKit Platform</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              DEFAULT: '#2563EB',
+              hover: '#1D4ED8',
+              light: '#DBEAFE',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    /* CSS animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .animate-fade-in-up {
+      animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .animate-scale-in {
+      animation: scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .active-nav {
+      background-color: rgba(37, 99, 235, 0.06);
+      border-right: 3px solid #2563EB;
+      color: #2563EB;
+    }
+    
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #E2E8F0;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2563EB;
+    }
+    
+    .custom-transition {
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-700 min-h-screen flex flex-col md:flex-row font-sans">
+
+  <!-- Sidebar Navigasi -->
+  <aside class="w-full md:w-60 bg-white border-b md:border-b-0 md:border-r border-slate-200 flex flex-col justify-between shrink-0 animate-scale-in">
+    <div>
+      <!-- Brand Logo -->
+      <div class="h-16 border-b border-slate-100 flex items-center gap-3 px-6">
+        <div class="w-7 h-7 bg-brand rounded-lg flex items-center justify-center font-bold text-white text-xs">
+          S
+        </div>
+        <span class="text-md font-bold tracking-tight text-slate-900">Send<span class="text-brand font-medium">Kit</span></span>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="p-3 space-y-1">
+        <button onclick="switchTab('overview')" id="nav-overview" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-50 hover:text-slate-900 custom-transition text-left">
+          <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Overview
+        </button>
+        <button onclick="switchTab('send')" id="nav-send" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-50 hover:text-slate-900 custom-transition text-left">
+          <i data-lucide="send" class="w-4 h-4"></i> Kirim Pesan
+        </button>
+        <button onclick="switchTab('logs')" id="nav-logs" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-50 hover:text-slate-900 custom-transition text-left">
+          <i data-lucide="database" class="w-4 h-4"></i> Riwayat Logs
+        </button>
+        <button onclick="switchTab('apikey')" id="nav-apikey" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-50 hover:text-slate-900 custom-transition text-left">
+          <i data-lucide="key" class="w-4 h-4"></i> API Key
+        </button>
+        <button onclick="switchTab('settings')" id="nav-settings" class="w-full hidden flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-50 hover:text-slate-900 custom-transition text-left">
+          <i data-lucide="settings" class="w-4 h-4"></i> Settings Admin
+        </button>
+        <a href="/docs" class="block w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs font-semibold text-slate-500 hover:bg-slate-50 hover:text-slate-900 custom-transition text-left">
+          <i data-lucide="book-open" class="w-4 h-4"></i> Dokumentasi API
+        </a>
+      </nav>
+    </div>
+
+    <!-- User Profile Footer -->
+    <div class="p-4 border-t border-slate-100">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3 overflow-hidden">
+          <div class="w-8 h-8 rounded-lg bg-brand/10 border border-brand/20 flex items-center justify-center font-bold text-xs text-brand shrink-0" id="avatarName">
+            U
+          </div>
+          <div class="overflow-hidden">
+            <h4 class="text-xs font-semibold text-slate-950 truncate" id="profileName">Loading...</h4>
+            <p class="text-[9px] text-slate-400 truncate" id="profileEmail">user@email.com</p>
+          </div>
+        </div>
+        <button onclick="logout()" class="text-slate-400 hover:text-red-500 transition-colors p-1" title="Log Out">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 flex flex-col min-w-0 bg-[#F8FAFC]">
+    <!-- Topbar -->
+    <header class="h-16 border-b border-slate-200 flex items-center justify-between px-6 shrink-0 bg-white">
+      <h2 class="text-sm font-bold text-slate-900" id="pageTitle">Overview</h2>
+      
+      <!-- User Quota Badge -->
+      <div class="flex items-center gap-2 bg-[#F8FAFC] border border-slate-200 px-3.5 py-1.5 rounded-lg text-[10px] font-bold text-slate-500">
+        SISA KUOTA: <span class="text-brand font-extrabold" id="quotaValue">0</span>
+      </div>
+    </header>
+
+    <!-- Content Pages Wrapper -->
+    <div class="flex-1 p-6 overflow-y-auto relative">
+      <!-- Loading Overlay -->
+      <div id="loadingOverlay" class="absolute inset-0 bg-[#F8FAFC]/80 flex items-center justify-center z-50">
+        <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-brand"></div>
+      </div>
+
+      <!-- Toast Notification -->
+      <div id="toast" class="hidden fixed bottom-6 right-6 px-4 py-2.5 rounded-lg border border-slate-200 bg-white text-xs font-semibold z-50 flex items-center gap-2 shadow-sm transition-all duration-300"></div>
+
+      <!-- ==================== TAB: OVERVIEW ==================== -->
+      <div id="tab-overview" class="tab-content space-y-6 animate-fade-in-up">
+        <!-- Stats Row -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white border border-slate-200 p-5 rounded-xl hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-500/5 custom-transition flex flex-col justify-between h-28">
+            <div class="flex items-center justify-between">
+              <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Terkirim</p>
+              <i data-lucide="send" class="w-4 h-4 text-slate-400"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-900" id="statTotal">0</h3>
+          </div>
+          <div class="bg-white border border-slate-200 p-5 rounded-xl hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-500/5 custom-transition flex flex-col justify-between h-28">
+            <div class="flex items-center justify-between">
+              <p class="text-[9px] font-bold text-slate-400 mb-1 uppercase tracking-wider">Delivery Rate</p>
+              <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-emerald-600" id="statRate">0%</h3>
+          </div>
+          <div class="bg-white border border-slate-200 p-5 rounded-xl hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-500/5 custom-transition flex flex-col justify-between h-28">
+            <div class="flex items-center justify-between">
+              <p class="text-[9px] font-bold text-slate-400 mb-1 uppercase tracking-wider">WhatsApp Sent</p>
+              <i data-lucide="message-square" class="w-4 h-4 text-brand"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-brand" id="statWA">0</h3>
+          </div>
+          <div class="bg-white border border-slate-200 p-5 rounded-xl hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-500/5 custom-transition flex flex-col justify-between h-28">
+            <div class="flex items-center justify-between">
+              <p class="text-[9px] font-bold text-slate-400 mb-1 uppercase tracking-wider">Email Sent</p>
+              <i data-lucide="mail" class="w-4 h-4 text-indigo-500"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-indigo-600" id="statEmail">0</h3>
+          </div>
+        </div>
+
+        <!-- Graphic Trend -->
+        <div class="bg-white border border-slate-200 p-5 rounded-xl hover:shadow-sm custom-transition">
+          <h3 class="text-xs font-bold text-slate-900 mb-4">Tren Pengiriman (7 Hari Terakhir)</h3>
+          <div class="h-64 w-full">
+            <canvas id="statsChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB: SEND MESSAGE ==================== -->
+      <div id="tab-send" class="tab-content hidden space-y-6 max-w-3xl mx-auto animate-fade-in-up">
+        <!-- Sub Tab Form Selector -->
+        <div class="bg-white border border-slate-200 p-1 rounded-lg flex gap-1">
+          <button onclick="switchSendType('wa')" id="btn-send-wa" class="flex-1 py-2 text-xs font-semibold rounded-md bg-brand text-white transition-all">WhatsApp</button>
+          <button onclick="switchSendType('email')" id="btn-send-email" class="flex-1 py-2 text-xs font-semibold rounded-md text-slate-500 hover:text-slate-800 transition-all">Email</button>
+        </div>
+
+        <!-- Form WA -->
+        <div id="form-send-wa" class="bg-white border border-slate-200 p-6 rounded-xl space-y-4 hover:shadow-sm custom-transition">
+          <h3 class="text-xs font-bold text-slate-900">Form Uji Coba WhatsApp</h3>
+          <div class="space-y-3.5">
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400 mb-1">NOMOR TUJUAN (WHATSAPP)</label>
+              <input type="text" id="waRecipient" placeholder="Contoh: 628123456789" class="w-full bg-[#F8FAFC] border border-slate-200 focus:border-brand focus:bg-white text-slate-900 text-xs rounded-lg px-3 py-2.5 outline-none font-light custom-transition">
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400 mb-1">ISI PESAN</label>
+              <textarea id="waMessage" rows="4" placeholder="Ketik pesan WhatsApp Anda..." class="w-full bg-[#F8FAFC] border border-slate-200 focus:border-brand focus:bg-white text-slate-900 text-xs rounded-lg px-3 py-2.5 outline-none resize-none font-light custom-transition"></textarea>
+            </div>
+            <button onclick="submitSendWA()" class="w-full bg-brand hover:bg-brand-hover text-white text-xs font-semibold rounded-lg py-2.5 shadow-sm hover:shadow-md hover:shadow-blue-500/10 custom-transition">Kirim WhatsApp</button>
+          </div>
+        </div>
+
+        <!-- Form Email -->
+        <div id="form-send-email" class="bg-white border border-slate-200 p-6 rounded-xl space-y-4 hover:shadow-sm custom-transition hidden">
+          <h3 class="text-xs font-bold text-slate-900">Form Uji Coba Email</h3>
+          <div class="space-y-3.5">
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400 mb-1">EMAIL PENERIMA</label>
+              <input type="email" id="emailRecipient" placeholder="nama@email.com" class="w-full bg-[#F8FAFC] border border-slate-200 focus:border-brand focus:bg-white text-slate-900 text-xs rounded-lg px-3 py-2.5 outline-none font-light custom-transition">
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400 mb-1">SUBJEK EMAIL</label>
+              <input type="text" id="emailSubject" placeholder="Subjek email" class="w-full bg-[#F8FAFC] border border-slate-200 focus:border-brand focus:bg-white text-slate-900 text-xs rounded-lg px-3 py-2.5 outline-none font-light custom-transition">
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400 mb-1">KONTEN EMAIL (HTML DUKUNGAN)</label>
+              <textarea id="emailMessage" rows="4" placeholder="<p>Tulis pesan HTML Anda di sini...</p>" class="w-full bg-[#F8FAFC] border border-slate-200 focus:border-brand focus:bg-white text-slate-900 text-xs rounded-lg px-3 py-2.5 outline-none resize-none font-light custom-transition"></textarea>
+            </div>
+            <button onclick="submitSendEmail()" class="w-full bg-brand hover:bg-brand-hover text-white text-xs font-semibold rounded-lg py-2.5 shadow-sm hover:shadow-md hover:shadow-blue-500/10 custom-transition">Kirim Email</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB: LOGS ==================== -->
+      <div id="tab-logs" class="tab-content hidden space-y-4 animate-fade-in-up">
+        <!-- Log Filter Row -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white border border-slate-200 p-4 rounded-xl">
+          <div class="flex flex-wrap items-center gap-4">
+            <div class="flex items-center gap-2">
+              <span class="text-[9px] font-bold text-slate-400">TIPE:</span>
+              <select id="filterType" onchange="loadLogs()" class="bg-[#F8FAFC] border border-slate-200 text-xs text-slate-700 rounded-lg px-2 py-1 outline-none">
+                <option value="">Semua</option>
+                <option value="wa">WhatsApp</option>
+                <option value="email">Email</option>
+              </select>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-[9px] font-bold text-slate-400">STATUS:</span>
+              <select id="filterStatus" onchange="loadLogs()" class="bg-[#F8FAFC] border border-slate-200 text-xs text-slate-700 rounded-lg px-2 py-1 outline-none">
+                <option value="">Semua</option>
+                <option value="sent">Sent</option>
+                <option value="failed">Failed</option>
+                <option value="pending">Pending</option>
+              </select>
+            </div>
+          </div>
+          <button onclick="loadLogs()" class="text-xs font-semibold text-brand hover:underline flex items-center gap-1.5 custom-transition">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i> Refresh data
+          </button>
+        </div>
+
+        <!-- Logs Table Card -->
+        <div class="bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-sm custom-transition">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="border-b border-slate-100 text-[9px] font-bold text-slate-400 uppercase tracking-wider bg-slate-50/50">
+                  <th class="px-6 py-3">Tipe</th>
+                  <th class="px-6 py-3">Penerima</th>
+                  <th class="px-6 py-3">Pesan</th>
+                  <th class="px-6 py-3">Status</th>
+                  <th class="px-6 py-3">Tanggal Kirim</th>
+                </tr>
+              </thead>
+              <tbody id="logsTableBody" class="divide-y divide-slate-100 text-slate-650">
+                <!-- Log Rows inserted dynamically -->
+              </tbody>
+            </table>
+          </div>
+          <div id="logsEmpty" class="hidden p-8 text-center text-slate-400">
+            Tidak ada data log yang ditemukan.
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB: API KEY ==================== -->
+      <div id="tab-apikey" class="tab-content hidden space-y-6 max-w-3xl mx-auto animate-fade-in-up">
+        <div class="bg-white border border-slate-200 p-6 rounded-xl space-y-5 hover:shadow-sm custom-transition">
+          <div class="space-y-1.5">
+            <h3 class="text-xs font-bold text-slate-900">Keamanan API Key</h3>
+            <p class="text-xs text-slate-400 leading-relaxed font-light">
+              Gunakan API key ini untuk mengautentikasi sistem luar Anda. Jaga kerahasiaannya untuk mencegah penggunaan tidak sah.
+            </p>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-[9px] font-bold text-slate-400">API KEY AKTIF</label>
+            <div class="flex items-center gap-2">
+              <div class="flex-1 bg-[#F8FAFC] border border-slate-200 px-3.5 py-3 rounded-lg font-mono text-xs text-slate-900 select-all overflow-x-auto" id="apiKeyDisplay">
+                ••••-••••-••••-••••
+              </div>
+              <button onclick="toggleApiKeyVisibility()" class="bg-white border border-slate-200 hover:border-slate-400 px-3 py-3 rounded-lg text-xs custom-transition" title="Lihat Key" id="btnToggleApiKey">
+                <i data-lucide="eye" class="w-4 h-4" id="eyeIcon"></i>
+              </button>
+              <button onclick="copyApiKey()" class="bg-white border border-slate-200 hover:border-slate-400 px-3 py-3 rounded-lg text-xs custom-transition" title="Salin Key">
+                <i data-lucide="copy" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
+            <div class="text-slate-400">
+              Rate Limit: 100 req/jam. Sisa Kuota: <b class="text-brand" id="apiKeyQuota">0</b>.
+            </div>
+            <button onclick="regenerateApiKey()" class="w-full sm:w-auto px-4 py-2 border border-red-200 text-red-500 hover:bg-red-500 hover:text-white text-xs font-semibold rounded-lg custom-transition">
+              Ganti API Key
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB: SETTINGS ADMIN ==================== -->
+      <div id="tab-settings" class="tab-content hidden space-y-6 max-w-3xl mx-auto animate-fade-in-up">
+        <div class="bg-white border border-slate-200 p-6 rounded-xl space-y-5 hover:shadow-sm custom-transition">
+          <div class="space-y-1">
+            <h3 class="text-xs font-bold text-slate-900">Pengaturan Gateway Admin</h3>
+            <p class="text-[10px] text-slate-400">Masukkan token Fonnte dan Brevo SMTP untuk mengaktifkan fungsionalitas middleware platform.</p>
+          </div>
+
+          <div class="space-y-3.5">
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400 mb-1">TOKEN WHATSAPP FONNTE</label>
+              <input type="password" id="fonnteTokenInput" placeholder="Masukkan token Fonnte..." class="w-full bg-[#F8FAFC] border border-slate-200 focus:border-brand focus:bg-white text-slate-900 text-xs rounded-lg px-3 py-2.5 outline-none font-light custom-transition">
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-slate-400 mb-1">BREVO SMTP API KEY</label>
+              <input type="password" id="brevoKeyInput" placeholder="xkeysib-..." class="w-full bg-[#F8FAFC] border border-slate-200 focus:border-brand focus:bg-white text-slate-900 text-xs rounded-lg px-3 py-2.5 outline-none font-light custom-transition">
+            </div>
+
+            <button onclick="saveAdminSettings()" class="w-full bg-brand hover:bg-brand-hover text-white text-xs font-semibold rounded-lg py-2.5 shadow-sm hover:shadow-md hover:shadow-blue-500/10 custom-transition">
+              Simpan Perubahan
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    let token = localStorage.getItem('token');
+    let user = JSON.parse(localStorage.getItem('user'));
+    let apiKeyReal = '';
+    let showApiKey = false;
+    let chartInstance = null;
+
+    if (!token || !user) {
+      token = 'mock_token_for_bypass';
+      user = { name: 'Demo User', email: 'demo@sendkit.com', role: 'admin' };
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+    }
+
+    document.getElementById('avatarName').innerText = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+
+    function showLoading(show) {
+      document.getElementById('loadingOverlay').classList.toggle('hidden', !show);
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.classList.remove('hidden', 'bg-red-500/10', 'border-red-500/20', 'text-red-500', 'bg-emerald-500/10', 'border-emerald-500/20', 'text-emerald-600');
+      
+      if (type === 'success') {
+        toast.classList.add('bg-emerald-500/10', 'border-emerald-500/20', 'text-emerald-650');
+      } else {
+        toast.classList.add('bg-red-500/10', 'border-red-500/20', 'text-red-500');
+      }
+      
+      toast.innerText = message;
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 3000);
+    }
+
+    function logout() {
+      document.cookie = "token=; path=/; max-age=0; SameSite=Strict";
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+      document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active-nav'));
+      document.getElementById(`nav-${tabId}`).classList.add('active-nav');
+
+      const titles = {
+        overview: 'Overview',
+        send: 'Kirim Pesan Pengujian',
+        logs: 'Riwayat Pesan',
+        apikey: 'Manajemen API Key',
+        settings: 'Konfigurasi Gateway Admin'
+      };
+      document.getElementById('pageTitle').innerText = titles[tabId] || 'SendKit';
+
+      if (tabId === 'overview') {
+        loadOverviewStats();
+      } else if (tabId === 'logs') {
+        loadLogs();
+      } else if (tabId === 'settings') {
+        loadAdminSettings();
+      }
+
+      // Re-trigger Lucide Icons
+      setTimeout(() => lucide.createIcons(), 50);
+    }
+
+    function switchSendType(type) {
+      const btnWA = document.getElementById('btn-send-wa');
+      const btnEmail = document.getElementById('btn-send-email');
+      const formWA = document.getElementById('form-send-wa');
+      const formEmail = document.getElementById('form-send-email');
+
+      if (type === 'wa') {
+        btnWA.className = 'flex-1 py-2 text-xs font-semibold rounded-md bg-brand text-white transition-all';
+        btnEmail.className = 'flex-1 py-2 text-xs font-semibold rounded-md text-slate-500 hover:text-slate-800 transition-all';
+        formWA.classList.remove('hidden');
+        formEmail.classList.add('hidden');
+      } else {
+        btnEmail.className = 'flex-1 py-2 text-xs font-semibold rounded-md bg-brand text-white transition-all';
+        btnWA.className = 'flex-1 py-2 text-xs font-semibold rounded-md text-slate-500 hover:text-slate-800 transition-all';
+        formEmail.classList.remove('hidden');
+        formWA.classList.add('hidden');
+      }
+    }
+
+    function toggleApiKeyVisibility() {
+      showApiKey = !showApiKey;
+      const display = document.getElementById('apiKeyDisplay');
+      const eyeIcon = document.getElementById('eyeIcon');
+      
+      if (showApiKey) {
+        display.innerText = apiKeyReal;
+        eyeIcon.setAttribute('data-lucide', 'eye-off');
+      } else {
+        display.innerText = '••••-••••-••••-' + apiKeyReal.split('-').pop();
+        eyeIcon.setAttribute('data-lucide', 'eye');
+      }
+      lucide.createIcons();
+    }
+
+    function copyApiKey() {
+      navigator.clipboard.writeText(apiKeyReal);
+      showToast('API Key disalin!');
+    }
+
+    async function loadProfile() {
+      try {
+        const response = await fetch('/dashboard/profile', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.status === 401) {
+          logout();
+          return;
+        }
+
+        const result = await response.json();
+        if (result.success) {
+          const profile = result.data;
+          document.getElementById('profileName').innerText = profile.name;
+          document.getElementById('profileEmail').innerText = profile.email;
+          document.getElementById('quotaValue').innerText = profile.quota;
+          document.getElementById('apiKeyQuota').innerText = profile.quota;
+          
+          apiKeyReal = profile.api_key;
+          document.getElementById('apiKeyDisplay').innerText = '••••-••••-••••-' + apiKeyReal.split('-').pop();
+
+          if (profile.role === 'admin') {
+            document.getElementById('nav-settings').classList.remove('hidden');
+          }
+          lucide.createIcons();
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal memuat profil.', 'error');
+      }
+    }
+
+    async function loadOverviewStats() {
+      showLoading(true);
+      try {
+        await loadProfile();
+        
+        const response = await fetch('/dashboard/stats', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          const stats = result.data;
+          document.getElementById('statTotal').innerText = stats.total;
+          document.getElementById('statRate').innerText = `${stats.success_rate}%`;
+          document.getElementById('statWA').innerText = stats.wa_total;
+          document.getElementById('statEmail').innerText = stats.email_total;
+
+          renderChart(stats.chart);
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal memuat statistik.', 'error');
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    function renderChart(chartData) {
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      const dates = chartData.map(item => item.date);
+      const waData = chartData.map(item => item.wa_success);
+      const emailData = chartData.map(item => item.email_success);
+
+      const labels = dates.length > 0 ? dates : ['Hari Ini'];
+      const waSet = waData.length > 0 ? waData : [0];
+      const emailSet = emailData.length > 0 ? emailData : [0];
+
+      const gridColor = '#F1F5F9';
+      const textColor = '#64748B';
+
+      const ctx = document.getElementById('statsChart').getContext('2d');
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'WhatsApp',
+              data: waSet,
+              borderColor: '#2563EB',
+              backgroundColor: 'rgba(37, 99, 235, 0.03)',
+              borderWidth: 2,
+              tension: 0.15,
+              fill: true
+            },
+            {
+              label: 'Email',
+              data: emailSet,
+              borderColor: '#6366F1',
+              backgroundColor: 'rgba(99, 102, 241, 0.03)',
+              borderWidth: 2,
+              tension: 0.15,
+              fill: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: textColor, font: { size: 10, weight: '600' } }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: gridColor },
+              ticks: { color: textColor, font: { size: 9 } }
+            },
+            y: {
+              grid: { color: gridColor },
+              ticks: { color: textColor, font: { size: 9 }, stepSize: 1 }
+            }
+          }
+        }
+      });
+    }
+
+    async function loadLogs() {
+      showLoading(true);
+      const type = document.getElementById('filterType').value;
+      const status = document.getElementById('filterStatus').value;
+
+      try {
+        let url = '/dashboard/logs';
+        const params = [];
+        if (type) params.push(`type=${type}`);
+        if (status) params.push(`status=${status}`);
+        if (params.length > 0) url += `?${params.join('&')}`;
+
+        const response = await fetch(url, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          const tbody = document.getElementById('logsTableBody');
+          tbody.innerHTML = '';
+
+          const logs = result.data;
+          
+          if (logs.length === 0) {
+            document.getElementById('logsEmpty').classList.remove('hidden');
+          } else {
+            document.getElementById('logsEmpty').classList.add('hidden');
+            logs.forEach(log => {
+              const statusBadges = {
+                sent: '<span class="px-2 py-0.5 rounded-md border border-emerald-250 bg-emerald-50 text-emerald-650 font-bold text-[9px]">Sent</span>',
+                failed: '<span class="px-2 py-0.5 rounded-md border border-red-200 bg-red-50 text-red-500 font-bold text-[9px]">Failed</span>',
+                pending: '<span class="px-2 py-0.5 rounded-md border border-amber-200 bg-amber-50 text-amber-500 font-bold text-[9px]">Pending</span>'
+              };
+
+              const formattedDate = new Date(log.sent_at).toLocaleString('id-ID');
+              const tr = document.createElement('tr');
+              tr.className = 'border-b border-slate-100 hover:bg-slate-50/50 custom-transition';
+              
+              const isWa = log.type === 'wa';
+              const typeIcon = isWa ? 'message-square' : 'mail';
+              const typeText = isWa ? 'WA' : 'Email';
+
+              tr.innerHTML = `
+                <td class="px-6 py-3 font-semibold text-[10px] uppercase flex items-center gap-1.5 text-slate-800">
+                  <i data-lucide="${typeIcon}" class="w-3.5 h-3.5 text-slate-400"></i> ${typeText}
+                </td>
+                <td class="px-6 py-3 font-mono text-[10px]">${log.recipient}</td>
+                <td class="px-6 py-3 text-[10px] truncate max-w-xs" title="${log.message}">${log.message}</td>
+                <td class="px-6 py-3">${statusBadges[log.status] || log.status}</td>
+                <td class="px-6 py-3 text-[10px] text-slate-450">${formattedDate}</td>
+              `;
+              tbody.appendChild(tr);
+            });
+          }
+          lucide.createIcons();
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal memuat log.', 'error');
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    async function regenerateApiKey() {
+      if (!confirm('Apakah Anda yakin ingin meregenerasi API Key Anda? Kredensial lama Anda tidak akan dapat digunakan kembali.')) {
+        return;
+      }
+      
+      showLoading(true);
+      try {
+        const response = await fetch('/dashboard/regenerate-key', {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          apiKeyReal = result.data.api_key;
+          showApiKey = false;
+          document.getElementById('apiKeyDisplay').innerText = '••••-••••-••••-' + apiKeyReal.split('-').pop();
+          document.getElementById('btnToggleApiKey').innerHTML = '<i data-lucide="eye" class="w-4 h-4" id="eyeIcon"></i>';
+          showToast('API Key diperbarui!');
+          lucide.createIcons();
+        } else {
+          showToast(result.message || 'Gagal meregenerasi API Key.', 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal terhubung ke server.', 'error');
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    async function loadAdminSettings() {
+      showLoading(true);
+      try {
+        const response = await fetch('/dashboard/settings', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          document.getElementById('fonnteTokenInput').value = result.data.fonnte_token || '';
+          document.getElementById('brevoKeyInput').value = result.data.brevo_api_key || '';
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal memuat token gateway.', 'error');
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    async function saveAdminSettings() {
+      const fonnte_token = document.getElementById('fonnteTokenInput').value.trim();
+      const brevo_api_key = document.getElementById('brevoKeyInput').value.trim();
+
+      showLoading(true);
+      try {
+        const response = await fetch('/dashboard/settings', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ fonnte_token, brevo_api_key })
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          showToast('Pengaturan gateway disimpan!');
+        } else {
+          showToast(result.message || 'Gagal menyimpan pengaturan.', 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Gagal menyimpan ke server.', 'error');
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    async function submitSendWA() {
+      const to = document.getElementById('waRecipient').value.trim();
+      const message = document.getElementById('waMessage').value.trim();
+
+      if (!to || !message) {
+        showToast('Lengkapi semua kolom formulir.', 'error');
+        return;
+      }
+
+      showLoading(true);
+      try {
+        const response = await fetch('/api/send/wa', {
+          method: 'POST',
+          headers: {
+            'x-api-key': apiKeyReal,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ to, message })
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          showToast('WhatsApp berhasil dikirim!');
+          document.getElementById('waRecipient').value = '';
+          document.getElementById('waMessage').value = '';
+          await loadProfile();
+        } else {
+          showToast(result.message || 'WhatsApp gagal dikirim.', 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Kesalahan pengiriman API.', 'error');
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    async function submitSendEmail() {
+      const to = document.getElementById('emailRecipient').value.trim();
+      const subject = document.getElementById('emailSubject').value.trim();
+      const message = document.getElementById('emailMessage').value.trim();
+
+      if (!to || !subject || !message) {
+        showToast('Lengkapi semua kolom formulir.', 'error');
+        return;
+      }
+
+      showLoading(true);
+      try {
+        const response = await fetch('/api/send/email', {
+          method: 'POST',
+          headers: {
+            'x-api-key': apiKeyReal,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ to, subject, message })
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          showToast('Email berhasil dikirim!');
+          document.getElementById('emailRecipient').value = '';
+          document.getElementById('emailSubject').value = '';
+          document.getElementById('emailMessage').value = '';
+          await loadProfile();
+        } else {
+          showToast(result.message || 'Email gagal dikirim.', 'error');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('Kesalahan pengiriman API.', 'error');
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    window.onload = () => {
+      switchTab('overview');
+    };
+  </script>
+</body>
+</html>

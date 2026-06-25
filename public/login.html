@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - SendKit Platform</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              DEFAULT: '#2563EB',
+              hover: '#1D4ED8',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-slide-up {
+      animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .custom-transition {
+      transition: all 0.2s ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex items-center justify-center p-4">
+
+  <!-- Back Link at top-left -->
+  <div class="absolute top-6 left-6">
+    <a href="/" class="flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-brand custom-transition">
+      <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Kembali
+    </a>
+  </div>
+
+  <!-- Form Container -->
+  <div class="w-full max-w-sm bg-white border border-slate-200 rounded-2xl p-8 shadow-sm animate-slide-up hover:border-slate-350 hover:shadow-md custom-transition">
+    
+    <!-- Logo & Header -->
+    <div class="text-center space-y-2.5 mb-8">
+      <a href="/" class="inline-flex items-center gap-2 text-slate-900 font-bold text-lg group">
+        <div class="w-7 h-7 bg-brand rounded-lg flex items-center justify-center text-white text-xs font-bold group-hover:scale-105 custom-transition">
+          S
+        </div>
+        <span>Send<span class="text-brand font-medium">Kit</span></span>
+      </a>
+      <h2 class="text-md font-bold text-slate-950">Masuk ke Akun Anda</h2>
+      <p class="text-xs text-slate-400 font-light">Masukkan kredensial Anda untuk melanjutkan ke dashboard.</p>
+    </div>
+
+    <!-- Alert Box -->
+    <div id="alertBox" class="hidden mb-5 p-3 rounded-lg text-[11px] border flex items-center gap-2 custom-transition font-medium"></div>
+
+    <!-- Form -->
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label for="email" class="block text-[9px] font-bold text-slate-400 tracking-wider uppercase mb-1">ALAMAT EMAIL</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+            <i data-lucide="mail" class="w-3.5 h-3.5"></i>
+          </span>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            required 
+            placeholder="nama@email.com" 
+            class="w-full bg-slate-50 border border-slate-200 focus:border-brand focus:bg-white text-slate-900 text-xs rounded-lg pl-9 pr-3.5 py-2.5 outline-none custom-transition font-light"
+          >
+        </div>
+      </div>
+
+      <div>
+        <label for="password" class="block text-[9px] font-bold text-slate-400 tracking-wider uppercase mb-1">PASSWORD</label>
+        <div class="relative">
+          <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+            <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+          </span>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            required 
+            placeholder="••••••••" 
+            class="w-full bg-slate-50 border border-slate-200 focus:border-brand focus:bg-white text-slate-900 text-xs rounded-lg pl-9 pr-3.5 py-2.5 outline-none custom-transition font-light"
+          >
+        </div>
+      </div>
+
+      <button 
+        type="submit" 
+        class="w-full bg-brand hover:bg-brand-hover text-white text-xs font-semibold rounded-lg py-3 custom-transition shadow-sm hover:shadow-md hover:shadow-blue-500/10 mt-2"
+      >
+        Masuk
+      </button>
+    </form>
+
+    <div class="text-center mt-6 border-t border-slate-100 pt-4">
+      <p class="text-xs text-slate-400 font-light">
+        Belum punya akun? <a href="/register" class="text-brand hover:underline font-semibold">Daftar gratis</a>
+      </p>
+    </div>
+
+  </div>
+
+  <script>
+    // Bypass login: Alihkan langsung ke dashboard
+    window.location.href = '/dashboard';
+
+    const form = document.getElementById('loginForm');
+    const alertBox = document.getElementById('alertBox');
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('registered')) {
+      showAlert('Registrasi berhasil! Silakan masuk dengan email Anda.', 'success');
+    }
+
+    function showAlert(message, type = 'error') {
+      alertBox.classList.remove('hidden', 'bg-red-500/10', 'border-red-500/20', 'text-red-600', 'bg-emerald-500/10', 'border-emerald-500/20', 'text-emerald-600');
+      
+      if (type === 'success') {
+        alertBox.classList.add('bg-emerald-500/10', 'border-emerald-500/20', 'text-emerald-650');
+      } else {
+        alertBox.classList.add('bg-red-500/10', 'border-red-500/20', 'text-red-600');
+      }
+      
+      alertBox.innerText = message;
+      alertBox.classList.remove('hidden');
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch('/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showAlert('Login sukses! Mengalihkan...', 'success');
+          
+          document.cookie = `token=${result.data.token}; path=/; max-age=86400; SameSite=Strict`;
+          
+          localStorage.setItem('token', result.data.token);
+          localStorage.setItem('user', JSON.stringify(result.data.user));
+          
+          setTimeout(() => {
+            window.location.href = '/dashboard';
+          }, 1000);
+        } else {
+          showAlert(result.message || 'Login gagal.');
+        }
+      } catch (err) {
+        console.error(err);
+        showAlert('Terjadi kesalahan jaringan atau server.');
+      }
+    });
+
+    // Inisialisasi Lucide Icons
+    lucide.createIcons();
+  </script>
+</body>
+</html>

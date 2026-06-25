@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dokumentasi API - SendKit</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              DEFAULT: '#2563EB',
+              hover: '#1D4ED8',
+              light: '#DBEAFE',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    body {
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .custom-transition {
+      transition: all 0.2s ease-in-out;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+
+  <!-- Header Docs Navbar -->
+  <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 sm:px-12 sticky top-0 z-40">
+    <div class="flex items-center gap-2">
+      <div class="w-7 h-7 bg-brand rounded-lg flex items-center justify-center font-bold text-white text-xs">
+        S
+      </div>
+      <span class="text-md font-bold tracking-tight text-slate-900">Send<span class="text-brand font-medium">Kit</span> Docs</span>
+    </div>
+    
+    <div class="flex items-center gap-3">
+      <a href="/dashboard" class="flex items-center gap-1 px-3.5 py-1.5 bg-[#F8FAFC] border border-slate-200 hover:border-slate-400 rounded-lg text-xs font-semibold text-slate-600 custom-transition">
+        <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i> Dashboard
+      </a>
+    </div>
+  </header>
+
+  <!-- Docs Layout -->
+  <div class="flex-1 max-w-7xl w-full mx-auto px-6 sm:px-12 py-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
+    
+    <!-- Left Navigation Sidebar -->
+    <aside class="lg:col-span-3 lg:sticky lg:top-24 h-fit space-y-4">
+      <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm">
+        <h3 class="text-[9px] font-bold text-slate-400 mb-3 uppercase tracking-wider">Navigasi Docs</h3>
+        <nav class="space-y-2.5 text-xs font-semibold">
+          <a href="#intro" class="block text-slate-600 hover:text-brand custom-transition">Pengenalan</a>
+          
+          <div class="pt-2 border-t border-slate-100">
+            <span class="text-[9px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Autentikasi</span>
+            <a href="#post-register" class="block text-slate-500 hover:text-slate-900 py-0.5 custom-transition font-medium">POST Register</a>
+            <a href="#post-login" class="block text-slate-500 hover:text-slate-900 py-0.5 custom-transition font-medium">POST Login</a>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100">
+            <span class="text-[9px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">API Kirim</span>
+            <a href="#post-send-wa" class="block text-slate-500 hover:text-slate-900 py-0.5 custom-transition font-medium">POST Send WA</a>
+            <a href="#post-send-email" class="block text-slate-500 hover:text-slate-900 py-0.5 custom-transition font-medium">POST Send Email</a>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100">
+            <span class="text-[9px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">OTP</span>
+            <a href="#post-otp-wa" class="block text-slate-500 hover:text-slate-900 py-0.5 custom-transition font-medium">POST OTP WA</a>
+            <a href="#post-otp-email" class="block text-slate-500 hover:text-slate-900 py-0.5 custom-transition font-medium">POST OTP Email</a>
+            <a href="#post-verify-otp" class="block text-slate-500 hover:text-slate-900 py-0.5 custom-transition font-medium">POST Verify OTP</a>
+          </div>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Docs Main content -->
+    <main class="lg:col-span-9 space-y-10">
+      
+      <!-- Section Intro -->
+      <section id="intro" class="bg-white border border-slate-200 p-6 rounded-xl space-y-3 shadow-sm">
+        <div class="flex items-center gap-1.5 text-brand font-bold text-md">
+          <i data-lucide="rocket" class="w-4 h-4"></i>
+          <h2>Pengenalan SendKit API</h2>
+        </div>
+        <p class="text-xs text-slate-500 leading-relaxed font-light">
+          SendKit adalah middleware API yang mempermudah pengiriman WhatsApp (via Fonnte) dan Email (via Brevo). Setiap endpoint API (kecuali autentikasi) wajib menggunakan header `x-api-key`.
+        </p>
+        <div class="bg-slate-50 border border-slate-200 p-3.5 rounded-lg text-xs font-mono">
+          <span class="text-[9px] font-bold text-slate-400 block mb-1">HEADER WAJIB</span>
+          <span class="text-brand">x-api-key: &lt;API_KEY_ANDA&gt;</span>
+        </div>
+      </section>
+
+      <!-- Section Register -->
+      <section id="post-register" class="bg-white border border-slate-200 p-6 rounded-xl space-y-4 shadow-sm">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">POST</span>
+          <h3 class="text-sm font-bold text-slate-900">/auth/register</h3>
+        </div>
+        <p class="text-xs text-slate-500 font-light">Registrasi pengguna baru untuk mendapatkan kuota pesan sandbox gratis.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-[11px] font-mono">
+          <div class="space-y-1">
+            <span class="text-slate-400 text-[10px]">PAYLOAD REQUEST</span>
+            <pre class="bg-slate-50 border border-slate-200 p-3 rounded-lg text-slate-650">
+{
+  "name": "Dev User",
+  "email": "dev@email.com",
+  "password": "secretpassword"
+}</pre>
+          </div>
+          <div class="space-y-1">
+            <span class="text-slate-400 text-[10px]">RESPONS SUKSES</span>
+            <pre class="bg-slate-50 border border-slate-200 p-3 rounded-lg text-slate-655">
+{
+  "success": true,
+  "message": "Registrasi berhasil.",
+  "data": {
+    "id": 1,
+    "name": "Dev User",
+    "api_key": "UUID-KEY",
+    "quota": 1000
+  }
+}</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section Login -->
+      <section id="post-login" class="bg-white border border-slate-200 p-6 rounded-xl space-y-4 shadow-sm">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">POST</span>
+          <h3 class="text-sm font-bold text-slate-900">/auth/login</h3>
+        </div>
+        <p class="text-xs text-slate-500 font-light">Verifikasi kredensial akun dan dapatkan token JWT untuk otorisasi dashboard.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-[11px] font-mono">
+          <div class="space-y-1">
+            <span class="text-slate-400 text-[10px]">PAYLOAD REQUEST</span>
+            <pre class="bg-slate-50 border border-slate-200 p-3 rounded-lg text-slate-650">
+{
+  "email": "dev@email.com",
+  "password": "secretpassword"
+}</pre>
+          </div>
+          <div class="space-y-1">
+            <span class="text-slate-400 text-[10px]">RESPONS SUKSES</span>
+            <pre class="bg-slate-50 border border-slate-200 p-3 rounded-lg text-slate-650">
+{
+  "success": true,
+  "data": {
+    "token": "JWT_TOKEN",
+    "user": { "id": 1, "name": "Dev User" }
+  }
+}</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section Send WA -->
+      <section id="post-send-wa" class="bg-white border border-slate-200 p-6 rounded-xl space-y-4 shadow-sm">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">POST</span>
+          <h3 class="text-sm font-bold text-slate-900">/api/send/wa</h3>
+        </div>
+        <p class="text-xs text-slate-500 font-light">Kirim notifikasi pesan WhatsApp via Fonnte gateway.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-[11px] font-mono">
+          <div class="space-y-1">
+            <span class="text-slate-400 text-[10px]">PAYLOAD REQUEST</span>
+            <pre class="bg-slate-50 border border-slate-200 p-3 rounded-lg text-slate-650">
+{
+  "to": "628123456789",
+  "message": "Halo dari SendKit API!"
+}</pre>
+          </div>
+          <div class="space-y-1">
+            <span class="text-slate-400 text-[10px]">RESPONS SUKSES</span>
+            <pre class="bg-slate-50 border border-slate-200 p-3 rounded-lg text-slate-650">
+{
+  "success": true,
+  "message": "Pesan WhatsApp berhasil dikirim.",
+  "data": { "recipient": "628123456789", "status": "sent" }
+}</pre>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">CURL CONTOH</span>
+          <div class="flex items-center gap-2">
+            <input type="text" readonly value="curl -X POST http://localhost:3000/api/send/wa -H 'x-api-key: KEY_ANDA' -H 'Content-Type: application/json' -d '{&quot;to&quot;: &quot;628123456789&quot;, &quot;message&quot;: &quot;Halo!&quot;}'" id="curlWa" class="flex-1 bg-slate-50 border border-slate-200 px-3.5 py-2.5 rounded-lg text-[10px] font-mono text-slate-500 outline-none select-all overflow-x-auto">
+            <button onclick="copyDocText('curlWa')" class="px-3 py-2.5 bg-white border border-slate-200 hover:border-slate-400 text-xs rounded-lg custom-transition">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section Send Email -->
+      <section id="post-send-email" class="bg-white border border-slate-200 p-6 rounded-xl space-y-4 shadow-sm">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">POST</span>
+          <h3 class="text-sm font-bold text-slate-900">/api/send/email</h3>
+        </div>
+        <p class="text-xs text-slate-500 font-light">Kirim email dengan dukungan format HTML penuh lewat SMTP Brevo.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-[11px] font-mono">
+          <div class="space-y-1">
+            <span class="text-slate-400 text-[10px]">PAYLOAD REQUEST</span>
+            <pre class="bg-slate-50 border border-slate-200 p-3 rounded-lg text-slate-650">
+{
+  "to": "user@email.com",
+  "subject": "Judul",
+  "message": "<h3>Isi HTML</h3>"
+}</pre>
+          </div>
+          <div class="space-y-1">
+            <span class="text-slate-400 text-[10px]">RESPONS SUKSES</span>
+            <pre class="bg-slate-50 border border-slate-200 p-3 rounded-lg text-slate-650">
+{
+  "success": true,
+  "message": "Email berhasil dikirim.",
+  "data": { "recipient": "user@email.com", "status": "sent" }
+}</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section OTP WA -->
+      <section id="post-otp-wa" class="bg-white border border-slate-200 p-6 rounded-xl space-y-4 shadow-sm">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">POST</span>
+          <h3 class="text-sm font-bold text-slate-900">/api/send/otp/wa</h3>
+        </div>
+        <p class="text-xs text-slate-500 font-light">Menghasilkan 6 digit OTP acak dan mengirimkannya langsung ke WhatsApp tujuan.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-[11px] font-mono">
+          <div class="space-y-1">
+            <span class="text-slate-400 text-[10px]">PAYLOAD REQUEST</span>
+            <pre class="bg-slate-50 border border-slate-200 p-3 rounded-lg text-slate-650">
+{
+  "to": "628123456789"
+}</pre>
+          </div>
+          <div class="space-y-1">
+            <span class="text-slate-400 text-[10px]">RESPONS SUKSES</span>
+            <pre class="bg-slate-50 border border-slate-200 p-3 rounded-lg text-slate-655">
+{
+  "success": true,
+  "message": "OTP berhasil dikirim via WhatsApp."
+}</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section OTP Email -->
+      <section id="post-otp-email" class="bg-white border border-slate-200 p-6 rounded-xl space-y-4 shadow-sm">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">POST</span>
+          <h3 class="text-sm font-bold text-slate-900">/api/send/otp/email</h3>
+        </div>
+        <p class="text-xs text-slate-500 font-light">Menghasilkan 6 digit OTP acak dan mengirimkannya lewat template HTML email yang rapi.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-[11px] font-mono">
+          <div class="space-y-1">
+            <span class="text-slate-400 text-[10px]">PAYLOAD REQUEST</span>
+            <pre class="bg-slate-50 border border-slate-200 p-3 rounded-lg text-slate-650">
+{
+  "to": "user@email.com"
+}</pre>
+          </div>
+          <div class="space-y-1">
+            <span class="text-slate-400 text-[10px]">RESPONS SUKSES</span>
+            <pre class="bg-slate-50 border border-slate-200 p-3 rounded-lg text-slate-650">
+{
+  "success": true,
+  "message": "OTP berhasil dikirim via Email."
+}</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section Verify OTP -->
+      <section id="post-verify-otp" class="bg-white border border-slate-200 p-6 rounded-xl space-y-4 shadow-sm">
+        <div class="flex items-center gap-2">
+          <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">POST</span>
+          <h3 class="text-sm font-bold text-slate-900">/api/verify/otp</h3>
+        </div>
+        <p class="text-xs text-slate-500 font-light">Verifikasi kode OTP. Memeriksa kecocokan nomor, kesesuaian kode, kedaluwarsa 5 menit, dan status verifikasi.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-[11px] font-mono">
+          <div class="space-y-1">
+            <span class="text-slate-400 text-[10px]">PAYLOAD REQUEST</span>
+            <pre class="bg-slate-50 border border-slate-200 p-3 rounded-lg text-slate-650">
+{
+  "to": "628123456789",
+  "otp": "123456"
+}</pre>
+          </div>
+          <div class="space-y-1">
+            <span class="text-slate-400 text-[10px]">RESPONS SUKSES</span>
+            <pre class="bg-slate-50 border border-slate-200 p-3 rounded-lg text-slate-650">
+{
+  "success": true,
+  "message": "Verifikasi OTP berhasil. Kode valid.",
+  "data": { "verified": true }
+}</pre>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="border-t border-slate-200 py-8 text-center text-[10px] text-slate-400 bg-white shadow-inner">
+    <p>© 2026 SendKit. Panduan integrasi middleware developer.</p>
+  </footer>
+
+  <script>
+    function copyDocText(elementId) {
+      const input = document.getElementById(elementId);
+      input.select();
+      navigator.clipboard.writeText(input.value);
+      alert('Teks disalin!');
+    }
+
+    // Inisialisasi Lucide Icons
+    lucide.createIcons();
+  </script>
+</body>
+</html>
